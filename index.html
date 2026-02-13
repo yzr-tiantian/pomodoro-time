@@ -1,1098 +1,976 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes"
-    />
-    <title>番茄时钟 </title>
-    <!-- Font Awesome 6 -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-    <!-- Google Font: Inter -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <!-- jQuery -->
-    <script
-      src="https://code.jquery.com/jquery-3.7.1.min.js"
-      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-      crossorigin="anonymous"
-    ></script>
-    <!-- 简单favicon避免404 -->
-    <link
-      rel="icon"
-      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍅</text></svg>"
-    />
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      body {
-        background: linear-gradient(145deg, #fef9e7 0%, #fff7e0 100%);
-        font-family: "Inter", sans-serif;
-        padding: 2rem 1.5rem;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        color: #2d3e50;
-      }
-      .container {
-        max-width: 800px;
-        width: 100%;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+  <title>番茄时钟 · 组记录版</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <!-- Google Font: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <!-- 简单favicon避免404 -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍅</text></svg>" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(145deg, #fef9e7 0%, #fff7e0 100%);
+      font-family: "Inter", sans-serif;
+      padding: 2rem 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #2d3e50;
+    }
+    .container {
+      max-width: 800px;
+      width: 100%;
+    }
 
-      /* 日期鼓励卡片（去掉声音测试，只留日期和鼓励） */
-      .date-encourage-card {
-        background: rgba(255, 235, 215, 0.7);
-        backdrop-filter: blur(8px);
-        border-radius: 60px;
-        padding: 0.9rem 1.8rem;
-        margin-bottom: 18px;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        border: 1px solid #ffdbb5;
-        box-shadow: 0 8px 18px #fbe6d4;
-        font-weight: 500;
-        color: #784b2e;
-      }
-      .date-info {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .date-info i {
-        color: #c96b4a;
-        margin-right: 4px;
-      }
-      .encourage-box {
-        background: #faead3;
-        padding: 6px 18px;
-        border-radius: 40px;
-        font-size: 0.95rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #5a3a22;
-      }
-      .encourage-text {
-        font-style: italic;
-        max-width: 200px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .refresh-encourage {
-        background: none;
-        border: none;
-        color: #b9784b;
-        font-size: 1.1rem;
-        cursor: pointer;
-        transition: 0.2s;
-        padding: 4px;
-      }
-      .refresh-encourage:hover {
-        color: #8e4d2a;
-        transform: rotate(60deg);
-      }
+    /* 日期鼓励卡片 —— 修复右上角文字遮挡（鼓励语换行+自适应宽度） */
+    .date-encourage-card {
+      background: rgba(255, 235, 215, 0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 60px;
+      padding: 0.9rem 1.8rem;
+      margin-bottom: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #ffdbb5;
+      box-shadow: 0 8px 18px #fbe6d4;
+      font-weight: 500;
+      color: #784b2e;
+    }
+    .date-info {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .date-info i {
+      color: #c96b4a;
+      margin-right: 4px;
+    }
+    .encourage-box {
+      background: #faead3;
+      padding: 6px 18px;
+      border-radius: 40px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #5a3a22;
+      flex-wrap: wrap;        /* 允许子项换行，避免文字撑破容器 */
+      max-width: 100%;       /* 确保不溢出父容器 */
+    }
+    /* ===== 关键修复：鼓励语不再隐藏/省略，完整显示 + 智能换行 ===== */
+    .encourage-text {
+      /* 文字效果  */
+      font-style: normal;
+      /* 移除原有宽度限制与溢出隐藏 ———— 文字完整可见 */
+      max-width: 300px;        /* 适度最大宽度，防止极端长句无限拉伸；同时可换行 */
+      white-space: normal;    /* 允许换行 */
+      overflow: visible;      
+      text-overflow: clip;   
+      word-break: break-word; /* 长单词/数字换行 */
+      margin-left: 5px;
+      flex: 1 1 auto;         /* 占据剩余空间，但受max-width约束 */
+      line-height: 1.4;       /* 换行时行距舒适 */
+    }
+    .refresh-encourage {
+      background: none;
+      border: none;
+      color: #b9784b;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      padding: 4px;
+      flex-shrink: 0;        /* 防止刷新按钮被压缩 */
+    }
+    .refresh-encourage:hover {
+      color: #8e4d2a;
+      transform: rotate(60deg);
+    }
 
-      /* 计时卡片 */
-      .timer-card {
-        background: rgba(255, 248, 235, 0.7);
-        backdrop-filter: blur(12px);
-        border-radius: 48px;
-        padding: 2rem 1.5rem;
-        box-shadow: 0 20px 35px -10px rgba(235, 120, 50, 0.2);
-        border: 1px solid rgba(255, 215, 170, 0.5);
-        margin-bottom: 28px;
-        text-align: center;
-      }
-      .mode-badge {
-        display: inline-block;
-        background: #ffb085;
-        padding: 8px 20px;
-        border-radius: 40px;
-        color: #4a2512;
-        font-weight: 600;
-        font-size: 1rem;
-        letter-spacing: 1px;
-        box-shadow: 0 4px 8px #ffe6d5;
-        margin-bottom: 20px;
-        border: 1px solid #ffe0c0;
-      }
-      .timer-display {
-        font-size: 5.5rem;
-        font-weight: 700;
-        font-feature-settings: "tnum";
-        color: #77450e;
-        line-height: 1;
-        margin: 0.2rem 0 0.5rem;
-        text-shadow: 0 4px 12px rgba(255, 140, 60, 0.2);
-      }
-      .btn-group-custom {
-        display: flex;
-        justify-content: center;
-        gap: 16px;
-        flex-wrap: wrap;
-        margin-top: 24px;
-      }
-      .btn-tomato {
-        border: none;
-        background: white;
-        padding: 12px 24px;
-        border-radius: 50px;
-        font-weight: 600;
-        font-size: 1rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        box-shadow:
-          0 6px 0 #d6895f,
-          0 10px 20px #ffc9a9;
-        transition: all 0.06s ease;
-        color: #5a3e1b;
-        border: 1px solid #ffe1c6;
-      }
-      .btn-tomato:active {
-        transform: translateY(6px);
-        box-shadow:
-          0 2px 0 #b5673f,
-          0 12px 20px #ffc9a9;
-      }
-      .btn-tomato i {
-        font-size: 1.1rem;
-        color: #c94f1f;
-      }
-      .btn-reset {
-        background: #fff4e5;
-        box-shadow:
-          0 6px 0 #dbb28b,
-          0 10px 20px #ffe0cd;
-      }
-      /* 新增：声音测试按钮样式（与开始重置一致但不同色） */
-      .btn-sound {
-        background: #ffece5;
-        box-shadow:
-          0 6px 0 #c48b74,
-          0 10px 20px #ffd5c2;
-        border: 1px solid #ffb694;
-      }
-      .btn-sound i {
-        color: #9f5e40;
-      }
+    /* 计时卡片 */
+    .timer-card {
+      background: rgba(255, 248, 235, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 48px;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 20px 35px -10px rgba(235, 120, 50, 0.2);
+      border: 1px solid rgba(255, 215, 170, 0.5);
+      margin-bottom: 28px;
+      text-align: center;
+    }
+    .mode-badge {
+      display: inline-block;
+      background: #ffb085;
+      padding: 8px 20px;
+      border-radius: 40px;
+      color: #4a2512;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 8px #ffe6d5;
+      margin-bottom: 20px;
+      border: 1px solid #ffe0c0;
+    }
+    .timer-display {
+      font-size: 5.5rem;
+      font-weight: 700;
+      font-feature-settings: "tnum";
+      color: #77450e;
+      line-height: 1;
+      margin: 0.2rem 0 0.5rem;
+      text-shadow: 0 4px 12px rgba(255, 140, 60, 0.2);
+    }
+    .btn-group-custom {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .btn-tomato {
+      border: none;
+      background: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 0 #d6895f, 0 10px 20px #ffc9a9;
+      transition: all 0.06s ease;
+      color: #5a3e1b;
+      border: 1px solid #ffe1c6;
+    }
+    .btn-tomato:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #b5673f, 0 12px 20px #ffc9a9;
+    }
+    .btn-tomato i {
+      font-size: 1.1rem;
+      color: #c94f1f;
+    }
+    .btn-reset {
+      background: #fff4e5;
+      box-shadow: 0 6px 0 #dbb28b, 0 10px 20px #ffe0cd;
+    }
+    .btn-sound {
+      background: #ffece5;
+      box-shadow: 0 6px 0 #c48b74, 0 10px 20px #ffd5c2;
+      border: 1px solid #ffb694;
+    }
+    .btn-sound i {
+      color: #9f5e40;
+    }
 
-      /* 自定义时间设置 */
-      .settings-row {
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        margin-top: 28px;
-        background: rgba(255, 235, 215, 0.5);
-        padding: 16px 20px;
-        border-radius: 100px;
-        backdrop-filter: blur(4px);
-      }
-      .settings-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: #683f1e;
-        font-weight: 500;
-      }
-      .settings-item label {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-      }
-      .number-input {
-        width: 75px;
-        padding: 8px 12px;
-        border-radius: 40px;
-        border: 1px solid #ffbb8a;
-        background: white;
-        font-weight: 600;
-        text-align: center;
-        font-size: 1rem;
-        color: #4f2d12;
-        outline: none;
-        transition: 0.2s;
-      }
-      .number-input:focus {
-        border-color: #ff6b4a;
-        box-shadow: 0 0 0 3px rgba(255, 139, 86, 0.3);
-      }
+    /* 自定义时间设置 */
+    .settings-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 28px;
+      background: rgba(255, 235, 215, 0.5);
+      padding: 16px 20px;
+      border-radius: 100px;
+      backdrop-filter: blur(4px);
+    }
+    .settings-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #683f1e;
+      font-weight: 500;
+    }
+    .settings-item label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .number-input {
+      width: 75px;
+      padding: 8px 12px;
+      border-radius: 40px;
+      border: 1px solid #ffbb8a;
+      background: white;
+      font-weight: 600;
+      text-align: center;
+      font-size: 1rem;
+      color: #4f2d12;
+      outline: none;
+      transition: 0.2s;
+    }
+    .number-input:focus {
+      border-color: #ff6b4a;
+      box-shadow: 0 0 0 3px rgba(255, 139, 86, 0.3);
+    }
 
-      /* 手动记录卡片 */
-      .record-card {
-        background: white;
-        border-radius: 36px;
-        padding: 1.8rem 1.6rem;
-        box-shadow: 0 15px 30px #edd7bf;
-        margin-bottom: 28px;
-        border: 1px solid #ffe5d0;
-      }
-      .section-title {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-weight: 600;
-        color: #6b3f00;
-        margin-bottom: 22px;
-        font-size: 1.3rem;
-        border-bottom: 2px dashed #ffc293;
-        padding-bottom: 12px;
-      }
-      .input-group-jq {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-      .row-flex {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 14px;
-        align-items: center;
-      }
-      .select-mode {
-        background: #ffefdd;
-        border: 1px solid #ffbb8a;
-        border-radius: 40px;
-        padding: 12px 22px;
-        font-weight: 500;
-        color: #562e0e;
-        outline: none;
-      }
-      .note-input {
-        flex: 1;
-        min-width: 200px;
-        background: #fffaf2;
-        border: 1px solid #ffcfaa;
-        border-radius: 50px;
-        padding: 12px 24px;
-        font-size: 1rem;
-        transition: 0.2s;
-      }
-      .note-input:focus {
-        background: white;
-        border-color: #ff8a5c;
-        box-shadow: 0 0 0 3px rgba(255, 158, 90, 0.3);
-      }
-      .btn-save {
-        background: #f5a65b;
-        border: none;
-        border-radius: 50px;
-        padding: 12px 28px;
-        color: white;
-        font-weight: 600;
-        border-bottom: 4px solid #c2712e;
-        transition: 0.08s;
-      }
-      .btn-save:active {
-        border-bottom-width: 2px;
-        transform: translateY(2px);
-      }
+    /* 手动记录卡片 */
+    .record-card {
+      background: white;
+      border-radius: 36px;
+      padding: 1.8rem 1.6rem;
+      box-shadow: 0 15px 30px #edd7bf;
+      margin-bottom: 28px;
+      border: 1px solid #ffe5d0;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      color: #6b3f00;
+      margin-bottom: 22px;
+      font-size: 1.3rem;
+      border-bottom: 2px dashed #ffc293;
+      padding-bottom: 12px;
+    }
+    .input-group-jq {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .row-flex {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+    .select-mode {
+      background: #ffefdd;
+      border: 1px solid #ffbb8a;
+      border-radius: 40px;
+      padding: 12px 22px;
+      font-weight: 500;
+      color: #562e0e;
+      outline: none;
+    }
+    .note-input {
+      flex: 1;
+      min-width: 200px;
+      background: #fffaf2;
+      border: 1px solid #ffcfaa;
+      border-radius: 50px;
+      padding: 12px 24px;
+      font-size: 1rem;
+      transition: 0.2s;
+    }
+    .note-input:focus {
+      background: white;
+      border-color: #ff8a5c;
+      box-shadow: 0 0 0 3px rgba(255, 158, 90, 0.3);
+    }
+    .btn-save {
+      background: #f5a65b;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 28px;
+      color: white;
+      font-weight: 600;
+      border-bottom: 4px solid #c2712e;
+      transition: 0.08s;
+    }
+    .btn-save:active {
+      border-bottom-width: 2px;
+      transform: translateY(2px);
+    }
 
-      /* 组历史记录样式 */
-      .history-card {
-        background: rgba(255, 245, 235, 0.8);
-        backdrop-filter: blur(4px);
-        border-radius: 36px;
-        padding: 1.8rem 1.6rem;
-        border: 1px solid #ffdbb5;
-      }
-      .group-item {
-        background: #fff8f0;
-        border-radius: 28px;
-        padding: 1.4rem 1.5rem;
-        margin-bottom: 24px;
-        border: 1px solid #ffd9b0;
-        box-shadow: 0 8px 18px #faded3;
-      }
-      .group-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        margin-bottom: 16px;
-        padding-bottom: 12px;
-        border-bottom: 2px solid #ffd8b0;
-      }
-      .group-title {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      .group-name {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: #6b3f1c;
-        background: #fff1e0;
-        padding: 5px 18px;
-        border-radius: 40px;
-        border: 1px solid #ffb27f;
-      }
-      .group-badge {
-        background: #d49b7a;
-        color: white;
-        padding: 4px 14px;
-        border-radius: 30px;
-        font-size: 0.8rem;
-        font-weight: 600;
-      }
-      .group-actions {
-        display: flex;
-        gap: 12px;
-      }
-      .btn-icon {
-        background: none;
-        border: 1px solid #ffac7a;
-        border-radius: 30px;
-        padding: 6px 16px;
-        color: #7b4a2a;
-        transition: 0.2s;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 0.9rem;
-      }
-      .btn-icon i {
-        font-size: 0.95rem;
-      }
-      .btn-icon:hover {
-        background: #ffe2d0;
-        border-color: #ff7e4e;
-      }
-      .btn-delete-group {
-        border-color: #ff9292;
-        color: #b04949;
-      }
-      .btn-delete-group:hover {
-        background: #ffe0e0;
-      }
+    /* 组历史记录样式 */
+    .history-card {
+      background: rgba(255, 245, 235, 0.8);
+      backdrop-filter: blur(4px);
+      border-radius: 36px;
+      padding: 1.8rem 1.6rem;
+      border: 1px solid #ffdbb5;
+    }
+    .group-item {
+      background: #fff8f0;
+      border-radius: 28px;
+      padding: 1.4rem 1.5rem;
+      margin-bottom: 24px;
+      border: 1px solid #ffd9b0;
+      box-shadow: 0 8px 18px #faded3;
+    }
+    .group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #ffd8b0;
+    }
+    .group-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .group-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #6b3f1c;
+      background: #fff1e0;
+      padding: 5px 18px;
+      border-radius: 40px;
+      border: 1px solid #ffb27f;
+    }
+    .group-badge {
+      background: #d49b7a;
+      color: white;
+      padding: 4px 14px;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .group-actions {
+      display: flex;
+      gap: 12px;
+    }
+    .btn-icon {
+      background: none;
+      border: 1px solid #ffac7a;
+      border-radius: 30px;
+      padding: 6px 16px;
+      color: #7b4a2a;
+      transition: 0.2s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+    }
+    .btn-icon i {
+      font-size: 0.95rem;
+    }
+    .btn-icon:hover {
+      background: #ffe2d0;
+      border-color: #ff7e4e;
+    }
+    .btn-delete-group {
+      border-color: #ff9292;
+      color: #b04949;
+    }
+    .btn-delete-group:hover {
+      background: #ffe0e0;
+    }
 
-      .group-detail {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding-left: 6px;
-      }
-      .session-row {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: baseline;
-        background: #fffbf5;
-        padding: 10px 18px;
-        border-radius: 30px;
-      }
-      .session-type {
-        width: 70px;
-        font-weight: 600;
-      }
-      .work-type {
-        color: #c94f1f;
-      }
-      .break-type {
-        color: #3a8b6b;
-      }
-      .session-time {
-        color: #946b54;
-        font-size: 0.9rem;
-        margin-left: 16px;
-      }
-      .session-note {
-        margin-left: 20px;
-        font-style: italic;
-        color: #5e4b3a;
-        background: #ffeddc;
-        padding: 4px 14px;
-        border-radius: 30px;
-      }
-      .group-footer {
-        margin-top: 16px;
-        display: flex;
-        align-items: center;
-        gap: 18px;
-        flex-wrap: wrap;
-        background: #fff5e8;
-        padding: 12px 18px;
-        border-radius: 50px;
-      }
-      .group-remark {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex: 1;
-      }
-      .remark-text {
-        color: #7b4a2a;
-        background: white;
-        padding: 5px 16px;
-        border-radius: 40px;
-        border: 1px dashed #ffa25b;
-      }
-      .empty-group-remark {
-        color: #b38f75;
-        font-style: italic;
-      }
+    .group-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-left: 6px;
+    }
+    .session-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      background: #fffbf5;
+      padding: 10px 18px;
+      border-radius: 30px;
+    }
+    .session-type {
+      width: 70px;
+      font-weight: 600;
+    }
+    .work-type {
+      color: #c94f1f;
+    }
+    .break-type {
+      color: #3a8b6b;
+    }
+    .session-time {
+      color: #946b54;
+      font-size: 0.9rem;
+      margin-left: 16px;
+    }
+    .session-note {
+      margin-left: 20px;
+      font-style: italic;
+      color: #5e4b3a;
+      background: #ffeddc;
+      padding: 4px 14px;
+      border-radius: 30px;
+    }
+    .group-footer {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      background: #fff5e8;
+      padding: 12px 18px;
+      border-radius: 50px;
+    }
+    .group-remark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+    .remark-text {
+      color: #7b4a2a;
+      background: white;
+      padding: 5px 16px;
+      border-radius: 40px;
+      border: 1px dashed #ffa25b;
+    }
+    .empty-group-remark {
+      color: #b38f75;
+      font-style: italic;
+    }
 
-      .single-record-item {
-        background: #fff9f0;
-        border-radius: 20px;
-        padding: 1rem 1.3rem;
-        margin-bottom: 10px;
-        border: 1px solid #ffe0be;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .delete-btn {
-        background: none;
-        border: none;
-        color: #b93e3e;
-        font-size: 1.3rem;
-        cursor: pointer;
-        transition: 0.1s;
-        padding: 8px;
-      }
-      .delete-btn:hover {
-        color: #d00000;
-        transform: scale(1.1);
-      }
-      .empty-history {
-        text-align: center;
-        color: #b58f7a;
-        padding: 30px 10px;
-        font-style: italic;
-      }
-      .btn-clear-all {
-        background: #ffc2a1;
-        border: none;
-        border-radius: 60px;
-        padding: 12px 28px;
-        color: #4a2c1a;
-        font-weight: 600;
-        margin-top: 24px;
-        width: 100%;
-        border-bottom: 4px solid #b77a5a;
-        transition: 0.06s;
-      }
-      .btn-clear-all:active {
-        transform: translateY(4px);
-        border-bottom-width: 2px;
-      }
-      footer {
-        margin-top: 25px;
-        color: #c9a78b;
-        font-size: 0.8rem;
-        text-align: center;
-      }
-      .hint {
-        font-size: 0.8rem;
-        color: #a17c5e;
-        margin-top: 8px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <!-- ========= 日期 + 鼓励语（声音测试按钮已移至计时区）========= -->
-      <div class="date-encourage-card">
-        <div class="date-info">
-          <span
-            ><i class="far fa-calendar-alt"></i>
-            <span id="currentDateDisplay"></span
-          ></span>
-          <span
-            ><i class="far fa-calendar-check"></i> 本月
-            <span id="daysInMonth"></span> 天</span
-          >
-        </div>
-        <div class="encourage-box">
-          <i class="fas fa-leaf" style="color: #689f38"></i>
-          <span id="encourageMessage" class="encourage-text"
-            >今天也是元气满满的一天！</span
-          >
-          <button
-            id="refreshEncourageBtn"
-            class="refresh-encourage"
-            title="换一句鼓励"
-          >
-            <i class="fas fa-sync-alt"></i>
-          </button>
-        </div>
+    .single-record-item {
+      background: #fff9f0;
+      border-radius: 20px;
+      padding: 1rem 1.3rem;
+      margin-bottom: 10px;
+      border: 1px solid #ffe0be;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #b93e3e;
+      font-size: 1.3rem;
+      cursor: pointer;
+      transition: 0.1s;
+      padding: 8px;
+    }
+    .delete-btn:hover {
+      color: #d00000;
+      transform: scale(1.1);
+    }
+    .empty-history {
+      text-align: center;
+      color: #b58f7a;
+      padding: 30px 10px;
+      font-style: italic;
+    }
+    .btn-clear-all {
+      background: #ffc2a1;
+      border: none;
+      border-radius: 60px;
+      padding: 12px 28px;
+      color: #4a2c1a;
+      font-weight: 600;
+      margin-top: 24px;
+      width: 100%;
+      border-bottom: 4px solid #b77a5a;
+      transition: 0.06s;
+    }
+    .btn-clear-all:active {
+      transform: translateY(4px);
+      border-bottom-width: 2px;
+    }
+    footer {
+      margin-top: 25px;
+      color: #c9a78b;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+    .hint {
+      font-size: 0.8rem;
+      color: #a17c5e;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- ========= 日期 + 鼓励语（已修复最右文字遮挡，完整显示换行）========= -->
+    <div class="date-encourage-card">
+      <div class="date-info">
+        <span><i class="far fa-calendar-alt"></i> <span id="currentDateDisplay"></span></span>
+        <span><i class="far fa-calendar-check"></i> 本月 <span id="daysInMonth"></span> 天</span>
       </div>
-
-      <!-- 番茄计时器卡片（包含声音测试按钮） -->
-      <div class="timer-card">
-        <span class="mode-badge" id="currentModeLabel"
-          ><i class="fas fa-tomato"></i> 专注工作</span
-        >
-        <div class="timer-display" id="timerDisplay">25:00</div>
-        <div class="settings-row">
-          <div class="settings-item">
-            <label for="workMinutes"
-              ><i class="fas fa-tomato" style="color: #e1704b"></i> 工作
-              (分)</label
-            >
-            <input
-              type="number"
-              id="workMinutes"
-              class="number-input"
-              value="25"
-              min="1"
-              max="99"
-              step="1"
-            />
-          </div>
-          <div class="settings-item">
-            <label for="breakMinutes"
-              ><i class="fas fa-mug-hot" style="color: #58967a"></i> 休息
-              (分)</label
-            >
-            <input
-              type="number"
-              id="breakMinutes"
-              class="number-input"
-              value="5"
-              min="1"
-              max="99"
-              step="1"
-            />
-          </div>
-        </div>
-        <div class="hint">
-          <i class="fas fa-sliders-h"></i>
-          修改数字自动生效，正在计时不影响当前剩余时间
-        </div>
-        <div class="btn-group-custom">
-          <button class="btn-tomato" id="startPauseBtn">
-            <i class="fas fa-play" id="startPauseIcon"></i> 开始
-          </button>
-          <button class="btn-tomato btn-reset" id="resetBtn">
-            <i class="fas fa-undo-alt"></i> 重置
-          </button>
-          <!-- 声音测试按钮移到这里，与开始重置同一行 -->
-          <button class="btn-tomato btn-sound" id="testSoundBtn">
-            <i class="fas fa-volume-up"></i> 声音测试
-          </button>
-        </div>
-        <p style="margin-top: 22px; color: #9f7e66">
-          <i class="far fa-clock"></i> 自动循环·长提示音·成组显示
-        </p>
+      <div class="encourage-box">
+        <i class="fas fa-leaf" style="color: #689f38"></i>
+        <span id="encourageMessage" class="encourage-text">今天也是元气满满的一天！</span>
+        <button id="refreshEncourageBtn" class="refresh-encourage" title="换一句鼓励">
+          <i class="fas fa-sync-alt"></i>
+        </button>
       </div>
-
-      <!-- 手动添加记录 (不自动分组，session_id为空) -->
-      <div class="record-card">
-        <div class="section-title">
-          <i class="fas fa-pen-fancy" style="color: #eb7d42"></i> 手动添加记录
-        </div>
-        <div class="input-group-jq">
-          <div class="row-flex">
-            <select id="recordTypeSelect" class="select-mode">
-              <option value="work">🍅 工作</option>
-              <option value="break">🧘 休息</option>
-            </select>
-            <input
-              type="text"
-              id="recordNote"
-              class="note-input"
-              placeholder="写下备注..."
-            />
-            <button class="btn-save" id="saveRecordBtn">
-              <i class="fas fa-save"></i>保存记录
-            </button>
-          </div>
-          <small style="color: #bb7a5a"
-            ><i class="fas fa-info-circle"></i>
-            手动记录不自动分组，会显示在下方「其他记录」中</small
-          >
-        </div>
-      </div>
-
-      <!-- 历史记录：先展示番茄组，再展示未分组的单条记录 -->
-      <div class="history-card">
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-          "
-        >
-          <div class="section-title" style="margin-bottom: 12px">
-            <i class="fas fa-history" style="color: #cd7b4b"></i> 番茄会话组
-          </div>
-          <button id="clearAllBtn" class="btn-icon" style="background: #ffe0d0">
-            <i class="fas fa-trash-alt"></i> 一键删除所有
-          </button>
-        </div>
-        <!-- 组列表渲染位置 -->
-        <div id="groupListContainer"></div>
-
-        <!-- 分隔线 -->
-        <hr style="border: 1px dashed #ffd9b0; margin: 28px 0 20px" />
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-          "
-        >
-          <i class="fas fa-list-ul" style="color: #b7774b"></i>
-          <span style="font-weight: 600; color: #6b3f00"
-            >其他记录（未分组）</span
-          >
-        </div>
-        <div id="singleRecordListContainer"></div>
-      </div>
-      <footer>
-        ⏳ 数据存储于 IndexedDB · 自动成组·可编辑组名/备注 · 一键清空 ·
-        声音测试已整合
-      </footer>
     </div>
 
-    <script>
-      // =======================  将所有DOM变量定义在开头，避免未定义错误 =======================
-      (function () {
-        "use strict";
+    <!-- 番茄计时器卡片（含声音测试按钮） -->
+    <div class="timer-card">
+      <span class="mode-badge" id="currentModeLabel"><i class="fas fa-tomato"></i> 专注工作</span>
+      <div class="timer-display" id="timerDisplay">25:00</div>
+      <div class="settings-row">
+        <div class="settings-item">
+          <label for="workMinutes"><i class="fas fa-tomato" style="color: #e1704b"></i> 工作 (分)</label>
+          <input type="number" id="workMinutes" class="number-input" value="25" min="1" max="99" step="1" />
+        </div>
+        <div class="settings-item">
+          <label for="breakMinutes"><i class="fas fa-mug-hot" style="color: #58967a"></i> 休息 (分)</label>
+          <input type="number" id="breakMinutes" class="number-input" value="5" min="1" max="99" step="1" />
+        </div>
+      </div>
+      <div class="hint">
+        <i class="fas fa-sliders-h"></i> 修改数字自动生效，正在计时不影响当前剩余时间
+      </div>
+      <div class="btn-group-custom">
+        <button class="btn-tomato" id="startPauseBtn">
+          <i class="fas fa-play" id="startPauseIcon"></i> 开始
+        </button>
+        <button class="btn-tomato btn-reset" id="resetBtn">
+          <i class="fas fa-undo-alt"></i> 重置
+        </button>
+        <button class="btn-tomato btn-sound" id="testSoundBtn">
+          <i class="fas fa-volume-up"></i> 声音测试
+        </button>
+      </div>
+      <p style="margin-top: 22px; color: #9f7e66">
+        <i class="far fa-clock"></i> 自动循环·长提示音·成组显示
+      </p>
+    </div>
 
-        // ---------- DOM 元素定义（立即执行，确保存在）----------
-        const $timerDisplay = $("#timerDisplay");
-        const $modeLabel = $("#currentModeLabel");
-        const $startPauseBtn = $("#startPauseBtn");
-        const $startPauseIcon = $("#startPauseIcon");
-        const $resetBtn = $("#resetBtn");
-        const $testSoundBtn = $("#testSoundBtn"); // 声音测试按钮
-        const $saveRecordBtn = $("#saveRecordBtn");
-        const $recordType = $("#recordTypeSelect");
-        const $recordNote = $("#recordNote");
-        const $historyContainer = $("#historyListContainer"); // 保留备用
-        const $workMinutesInput = $("#workMinutes");
-        const $breakMinutesInput = $("#breakMinutes");
-        const $clearAllBtn = $("#clearAllBtn");
-        const $refreshEncourageBtn = $("#refreshEncourageBtn");
+    <!-- 手动添加记录 (不自动分组，session_id为空) -->
+    <div class="record-card">
+      <div class="section-title">
+        <i class="fas fa-pen-fancy" style="color: #eb7d42"></i> 手动添加记录
+      </div>
+      <div class="input-group-jq">
+        <div class="row-flex">
+          <select id="recordTypeSelect" class="select-mode">
+            <option value="work">🍅 工作</option>
+            <option value="break">🧘 休息</option>
+          </select>
+          <input type="text" id="recordNote" class="note-input" placeholder="写下备注..." />
+          <button class="btn-save" id="saveRecordBtn">
+            <i class="fas fa-save"></i>保存记录
+          </button>
+        </div>
+        <small style="color: #bb7a5a"><i class="fas fa-info-circle"></i> 手动记录不自动分组，会显示在下方「其他记录」中</small>
+      </div>
+    </div>
 
-        // =======================  IndexedDB 版本2: 增加 sessionGroups 仓库 + session_id 索引 =======================
-        const DB_NAME = "PomodoroDB";
-        const DB_VERSION = 2;
-        const STORE_SESSIONS = "tomatoSessions";
-        const STORE_GROUPS = "sessionGroups";
+    <!-- 历史记录：先展示番茄组，再展示未分组的单条记录 -->
+    <div class="history-card">
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <div class="section-title" style="margin-bottom: 12px">
+          <i class="fas fa-history" style="color: #cd7b4b"></i> 番茄会话组
+        </div>
+        <button id="clearAllBtn" class="btn-icon" style="background: #ffe0d0">
+          <i class="fas fa-trash-alt"></i> 一键删除所有
+        </button>
+      </div>
+      <!-- 组列表渲染位置 -->
+      <div id="groupListContainer"></div>
 
-        function openDB() {
-          return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_NAME, DB_VERSION);
-            request.onerror = (event) => reject(event.target.error);
-            request.onsuccess = (event) => resolve(event.target.result);
-            request.onupgradeneeded = (event) => {
-              const db = event.target.result;
-              const tx = event.target.transaction;
-              // 1. sessions 仓库
-              if (!db.objectStoreNames.contains(STORE_SESSIONS)) {
-                const store = db.createObjectStore(STORE_SESSIONS, {
-                  keyPath: "id",
-                  autoIncrement: true,
-                });
-                store.createIndex("timestamp", "timestamp", { unique: false });
-                store.createIndex("type", "type", { unique: false });
-              }
-              // 添加 session_id 索引 (版本升级)
-              const sessionsStore = tx.objectStore(STORE_SESSIONS);
-              if (!sessionsStore.indexNames.contains("session_id")) {
-                sessionsStore.createIndex("session_id", "session_id", {
-                  unique: false,
-                });
-              }
-              // 2. 组仓库
-              if (!db.objectStoreNames.contains(STORE_GROUPS)) {
-                const groupStore = db.createObjectStore(STORE_GROUPS, {
-                  keyPath: "session_id",
-                });
-                groupStore.createIndex("createdAt", "createdAt", {
-                  unique: false,
-                });
-              }
-            };
-          });
-        }
+      <!-- 分隔线 -->
+      <hr style="border: 1px dashed #ffd9b0; margin: 28px 0 20px" />
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+        <i class="fas fa-list-ul" style="color: #b7774b"></i>
+        <span style="font-weight: 600; color: #6b3f00">其他记录（未分组）</span>
+      </div>
+      <div id="singleRecordListContainer"></div>
+    </div>
+    <footer>
+      ⏳ 数据存储于 IndexedDB · 自动成组·可编辑组名/备注 · 一键清空 · 声音测试已整合 · 鼓励语完整可见
+    </footer>
+  </div>
 
-        // ========== 会话组 CRUD ==========
-        async function createGroup(session_id, defaultName = "番茄会话") {
-          const db = await openDB();
-          return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_GROUPS, "readwrite");
-            const store = tx.objectStore(STORE_GROUPS);
-            const group = {
-              session_id: session_id,
-              name: defaultName,
-              remark: "",
-              createdAt: new Date().toISOString(),
-            };
-            const request = store.add(group);
-            request.onsuccess = () => resolve(session_id);
-            request.onerror = (err) => reject(err);
-            tx.oncomplete = () => db.close();
-          });
-        }
+  <script>
+    // ======================= 将所有DOM变量定义在开头 =======================
+    (function () {
+      "use strict";
 
-        async function updateGroup(session_id, updates) {
-          const db = await openDB();
-          return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_GROUPS, "readwrite");
-            const store = tx.objectStore(STORE_GROUPS);
-            const getReq = store.get(session_id);
-            getReq.onsuccess = () => {
-              const group = getReq.result;
-              if (!group) {
-                reject("组不存在");
-                return;
-              }
-              if (updates.name !== undefined) group.name = updates.name;
-              if (updates.remark !== undefined) group.remark = updates.remark;
-              const putReq = store.put(group);
-              putReq.onsuccess = () => resolve();
-              putReq.onerror = (err) => reject(err);
-            };
-            getReq.onerror = (err) => reject(err);
-            tx.oncomplete = () => db.close();
-          });
-        }
+      // ---------- DOM 元素定义 ----------
+      const $timerDisplay = $("#timerDisplay");
+      const $modeLabel = $("#currentModeLabel");
+      const $startPauseBtn = $("#startPauseBtn");
+      const $startPauseIcon = $("#startPauseIcon");
+      const $resetBtn = $("#resetBtn");
+      const $testSoundBtn = $("#testSoundBtn");
+      const $saveRecordBtn = $("#saveRecordBtn");
+      const $recordType = $("#recordTypeSelect");
+      const $recordNote = $("#recordNote");
+      const $workMinutesInput = $("#workMinutes");
+      const $breakMinutesInput = $("#breakMinutes");
+      const $clearAllBtn = $("#clearAllBtn");
+      const $refreshEncourageBtn = $("#refreshEncourageBtn");
 
-        async function deleteGroupAndSessions(session_id) {
-          const db = await openDB();
-          return new Promise((resolve, reject) => {
-            const tx = db.transaction(
-              [STORE_SESSIONS, STORE_GROUPS],
-              "readwrite",
-            );
-            const sessionStore = tx.objectStore(STORE_SESSIONS);
-            const groupStore = tx.objectStore(STORE_GROUPS);
+      // ======================= IndexedDB 版本2 =======================
+      const DB_NAME = "PomodoroDB";
+      const DB_VERSION = 2;
+      const STORE_SESSIONS = "tomatoSessions";
+      const STORE_GROUPS = "sessionGroups";
 
-            const index = sessionStore.index("session_id");
-            const range = IDBKeyRange.only(session_id);
-            index.openCursor(range).onsuccess = (event) => {
-              const cursor = event.target.result;
-              if (cursor) {
-                sessionStore.delete(cursor.primaryKey);
-                cursor.continue();
-              }
-            };
-            groupStore.delete(session_id);
-            tx.oncomplete = () => {
-              db.close();
-              resolve();
-            };
-            tx.onerror = (err) => {
-              db.close();
-              reject(err);
-            };
-          });
-        }
-
-        async function getAllGroupsWithSessions() {
-          const db = await openDB();
-          return new Promise((resolve, reject) => {
-            const tx = db.transaction(
-              [STORE_GROUPS, STORE_SESSIONS],
-              "readonly",
-            );
-            const groupStore = tx.objectStore(STORE_GROUPS);
-            const sessionStore = tx.objectStore(STORE_SESSIONS);
-            const groups = [];
-            groupStore.openCursor().onsuccess = (event) => {
-              const cursor = event.target.result;
-              if (cursor) {
-                const group = cursor.value;
-                const index = sessionStore.index("session_id");
-                const req = index.getAll(group.session_id);
-                req.onsuccess = () => {
-                  group.sessions = req.result || [];
-                };
-                groups.push(group);
-                cursor.continue();
-              }
-            };
-            tx.oncomplete = () => {
-              groups.sort(
-                (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
-              );
-              resolve(groups);
-            };
-            tx.onerror = (err) => reject(err);
-          });
-        }
-
-        async function getUnlinkedSessions() {
-          const db = await openDB();
-          return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_SESSIONS, "readonly");
-            const store = tx.objectStore(STORE_SESSIONS);
-            const request = store.getAll();
-            request.onsuccess = () => {
-              const all = request.result;
-              const unlinked = all
-                .filter((s) => !s.session_id)
-                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-              resolve(unlinked);
-            };
-            request.onerror = (err) => reject(err);
-            tx.oncomplete = () => db.close();
-          });
-        }
-
-        async function addSession(type, note = "", session_id = null) {
-          const db = await openDB();
-          return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_SESSIONS, "readwrite");
-            const store = tx.objectStore(STORE_SESSIONS);
-            const session = {
-              type: type,
-              note: note.trim() || (type === "work" ? "专注工作" : "休息调整"),
-              timestamp: new Date().toISOString(),
-            };
-            if (session_id) session.session_id = session_id;
-            const request = store.add(session);
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = (err) => reject(err);
-            tx.oncomplete = () => db.close();
-          });
-        }
-
-        async function deleteSessionById(id) {
-          const db = await openDB();
-          return new Promise((resolve, reject) => {
-            const tx = db.transaction(STORE_SESSIONS, "readwrite");
-            const store = tx.objectStore(STORE_SESSIONS);
-            const request = store.delete(id);
-            request.onsuccess = () => resolve(true);
-            request.onerror = (err) => reject(err);
-            tx.oncomplete = () => db.close();
-          });
-        }
-
-        async function deleteAllData() {
-          const db = await openDB();
-          return new Promise((resolve, reject) => {
-            const tx = db.transaction(
-              [STORE_SESSIONS, STORE_GROUPS],
-              "readwrite",
-            );
-            tx.objectStore(STORE_SESSIONS).clear();
-            tx.objectStore(STORE_GROUPS).clear();
-            tx.oncomplete = () => {
-              db.close();
-              resolve();
-            };
-            tx.onerror = (err) => reject(err);
-          });
-        }
-
-        // =======================  长提示音 (9次脉冲，约4.5秒) =======================
-        let audioCtx = null;
-        let beepTimeouts = [];
-        function initAudioContext() {
-          if (!audioCtx)
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        async function ensureAudioContext() {
-          if (!audioCtx) initAudioContext();
-          if (audioCtx.state === "suspended") {
-            try {
-              await audioCtx.resume();
-            } catch (e) {}
-          }
-        }
-        function playShortBeep() {
-          if (!audioCtx || audioCtx.state !== "running") return;
-          const now = audioCtx.currentTime;
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = "sine";
-          osc.frequency.value = 660;
-          gain.gain.setValueAtTime(0.25, now);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(now);
-          osc.stop(now + 0.2);
-        }
-        function playBeep() {
-          beepTimeouts.forEach((id) => clearTimeout(id));
-          beepTimeouts = [];
-          ensureAudioContext().then(() => {
-            for (let i = 0; i < 9; i++) {
-              beepTimeouts.push(setTimeout(() => playShortBeep(), i * 500));
+      function openDB() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+          request.onerror = (event) => reject(event.target.error);
+          request.onsuccess = (event) => resolve(event.target.result);
+          request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            const tx = event.target.transaction;
+            if (!db.objectStoreNames.contains(STORE_SESSIONS)) {
+              const store = db.createObjectStore(STORE_SESSIONS, {
+                keyPath: "id",
+                autoIncrement: true,
+              });
+              store.createIndex("timestamp", "timestamp", { unique: false });
+              store.createIndex("type", "type", { unique: false });
             }
-          });
-        }
+            const sessionsStore = tx.objectStore(STORE_SESSIONS);
+            if (!sessionsStore.indexNames.contains("session_id")) {
+              sessionsStore.createIndex("session_id", "session_id", {
+                unique: false,
+              });
+            }
+            if (!db.objectStoreNames.contains(STORE_GROUPS)) {
+              const groupStore = db.createObjectStore(STORE_GROUPS, {
+                keyPath: "session_id",
+              });
+              groupStore.createIndex("createdAt", "createdAt", {
+                unique: false,
+              });
+            }
+          };
+        });
+      }
 
-        // =======================  计时器逻辑 =======================
-        let WORK_TIME = 25 * 60,
-          BREAK_TIME = 5 * 60;
-        let timerInterval = null,
-          isRunning = false,
-          currentMode = "work",
+      // ========== 会话组 CRUD ==========
+      async function createGroup(session_id, defaultName = "番茄会话") {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_GROUPS, "readwrite");
+          const store = tx.objectStore(STORE_GROUPS);
+          const group = {
+            session_id: session_id,
+            name: defaultName,
+            remark: "",
+            createdAt: new Date().toISOString(),
+          };
+          const request = store.add(group);
+          request.onsuccess = () => resolve(session_id);
+          request.onerror = (err) => reject(err);
+          tx.oncomplete = () => db.close();
+        });
+      }
+
+      async function updateGroup(session_id, updates) {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_GROUPS, "readwrite");
+          const store = tx.objectStore(STORE_GROUPS);
+          const getReq = store.get(session_id);
+          getReq.onsuccess = () => {
+            const group = getReq.result;
+            if (!group) {
+              reject("组不存在");
+              return;
+            }
+            if (updates.name !== undefined) group.name = updates.name;
+            if (updates.remark !== undefined) group.remark = updates.remark;
+            const putReq = store.put(group);
+            putReq.onsuccess = () => resolve();
+            putReq.onerror = (err) => reject(err);
+          };
+          getReq.onerror = (err) => reject(err);
+          tx.oncomplete = () => db.close();
+        });
+      }
+
+      async function deleteGroupAndSessions(session_id) {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction([STORE_SESSIONS, STORE_GROUPS], "readwrite");
+          const sessionStore = tx.objectStore(STORE_SESSIONS);
+          const groupStore = tx.objectStore(STORE_GROUPS);
+          const index = sessionStore.index("session_id");
+          const range = IDBKeyRange.only(session_id);
+          index.openCursor(range).onsuccess = (event) => {
+            const cursor = event.target.result;
+            if (cursor) {
+              sessionStore.delete(cursor.primaryKey);
+              cursor.continue();
+            }
+          };
+          groupStore.delete(session_id);
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+          tx.onerror = (err) => {
+            db.close();
+            reject(err);
+          };
+        });
+      }
+
+      async function getAllGroupsWithSessions() {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction([STORE_GROUPS, STORE_SESSIONS], "readonly");
+          const groupStore = tx.objectStore(STORE_GROUPS);
+          const sessionStore = tx.objectStore(STORE_SESSIONS);
+          const groups = [];
+          groupStore.openCursor().onsuccess = (event) => {
+            const cursor = event.target.result;
+            if (cursor) {
+              const group = cursor.value;
+              const index = sessionStore.index("session_id");
+              const req = index.getAll(group.session_id);
+              req.onsuccess = () => {
+                group.sessions = req.result || [];
+              };
+              groups.push(group);
+              cursor.continue();
+            }
+          };
+          tx.oncomplete = () => {
+            groups.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            resolve(groups);
+          };
+          tx.onerror = (err) => reject(err);
+        });
+      }
+
+      async function getUnlinkedSessions() {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_SESSIONS, "readonly");
+          const store = tx.objectStore(STORE_SESSIONS);
+          const request = store.getAll();
+          request.onsuccess = () => {
+            const all = request.result;
+            const unlinked = all
+              .filter((s) => !s.session_id)
+              .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            resolve(unlinked);
+          };
+          request.onerror = (err) => reject(err);
+          tx.oncomplete = () => db.close();
+        });
+      }
+
+      async function addSession(type, note = "", session_id = null) {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_SESSIONS, "readwrite");
+          const store = tx.objectStore(STORE_SESSIONS);
+          const session = {
+            type: type,
+            note: note.trim() || (type === "work" ? "专注工作" : "休息调整"),
+            timestamp: new Date().toISOString(),
+          };
+          if (session_id) session.session_id = session_id;
+          const request = store.add(session);
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = (err) => reject(err);
+          tx.oncomplete = () => db.close();
+        });
+      }
+
+      async function deleteSessionById(id) {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction(STORE_SESSIONS, "readwrite");
+          const store = tx.objectStore(STORE_SESSIONS);
+          const request = store.delete(id);
+          request.onsuccess = () => resolve(true);
+          request.onerror = (err) => reject(err);
+          tx.oncomplete = () => db.close();
+        });
+      }
+
+      async function deleteAllData() {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction([STORE_SESSIONS, STORE_GROUPS], "readwrite");
+          tx.objectStore(STORE_SESSIONS).clear();
+          tx.objectStore(STORE_GROUPS).clear();
+          tx.oncomplete = () => {
+            db.close();
+            resolve();
+          };
+          tx.onerror = (err) => reject(err);
+        });
+      }
+
+      // ======================= 长提示音 (9次脉冲) =======================
+      let audioCtx = null;
+      let beepTimeouts = [];
+      function initAudioContext() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      async function ensureAudioContext() {
+        if (!audioCtx) initAudioContext();
+        if (audioCtx.state === "suspended") {
+          try {
+            await audioCtx.resume();
+          } catch (e) {}
+        }
+      }
+      function playShortBeep() {
+        if (!audioCtx || audioCtx.state !== "running") return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = 660;
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.2);
+      }
+      function playBeep() {
+        beepTimeouts.forEach((id) => clearTimeout(id));
+        beepTimeouts = [];
+        ensureAudioContext().then(() => {
+          for (let i = 0; i < 9; i++) {
+            beepTimeouts.push(setTimeout(() => playShortBeep(), i * 500));
+          }
+        });
+      }
+
+      // ======================= 计时器逻辑 =======================
+      let WORK_TIME = 25 * 60,
+        BREAK_TIME = 5 * 60;
+      let timerInterval = null,
+        isRunning = false,
+        currentMode = "work",
+        timeLeft = WORK_TIME;
+      let pendingSessionId = null;
+
+      function formatTime(seconds) {
+        return `${Math.floor(seconds / 60).toString().padStart(2, "0")}:${(seconds % 60).toString().padStart(2, "0")}`;
+      }
+      function updateUI() {
+        $timerDisplay.text(formatTime(timeLeft));
+        if (currentMode === "work") {
+          $modeLabel.html('<i class="fas fa-tomato"></i> 专注工作');
+          $modeLabel.css("background", "#ffb085");
+        } else {
+          $modeLabel.html('<i class="fas fa-mug-hot"></i> 休息时间');
+          $modeLabel.css("background", "#a5d0b0");
+        }
+      }
+      function switchMode() {
+        if (currentMode === "work") {
+          currentMode = "break";
+          timeLeft = BREAK_TIME;
+        } else {
+          currentMode = "work";
           timeLeft = WORK_TIME;
-        let pendingSessionId = null; // 暂存工作产生的session_id，供休息使用
+        }
+        updateUI();
+      }
+      function stopTimer() {
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
+        isRunning = false;
+        $startPauseIcon.removeClass("fa-pause").addClass("fa-play");
+      }
 
-        function formatTime(seconds) {
-          return `${Math.floor(seconds / 60)
-            .toString()
-            .padStart(2, "0")}:${(seconds % 60).toString().padStart(2, "0")}`;
-        }
-        function updateUI() {
-          $timerDisplay.text(formatTime(timeLeft));
-          if (currentMode === "work") {
-            $modeLabel.html('<i class="fas fa-tomato"></i> 专注工作');
-            $modeLabel.css("background", "#ffb085");
-          } else {
-            $modeLabel.html('<i class="fas fa-mug-hot"></i> 休息时间');
-            $modeLabel.css("background", "#a5d0b0");
+      async function startTimer() {
+        ensureAudioContext();
+        if (timerInterval) clearInterval(timerInterval);
+        isRunning = true;
+        $startPauseIcon.removeClass("fa-play").addClass("fa-pause");
+        timerInterval = setInterval(async () => {
+          if (timeLeft > 0) {
+            timeLeft--;
+            updateUI();
           }
-        }
-        function switchMode() {
-          if (currentMode === "work") {
-            currentMode = "break";
-            timeLeft = BREAK_TIME;
-          } else {
-            currentMode = "work";
-            timeLeft = WORK_TIME;
-          }
-          updateUI();
-        }
-        function stopTimer() {
-          if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-          }
-          isRunning = false;
-          $startPauseIcon.removeClass("fa-pause").addClass("fa-play");
-        }
-
-        async function startTimer() {
-          ensureAudioContext();
-          if (timerInterval) clearInterval(timerInterval);
-          isRunning = true;
-          $startPauseIcon.removeClass("fa-play").addClass("fa-pause");
-          timerInterval = setInterval(async () => {
-            if (timeLeft > 0) {
-              timeLeft--;
-              updateUI();
-            }
-            if (timeLeft === 0) {
-              playBeep();
-              const mode = currentMode;
-              let autoNote = mode === "work" ? "✅ 番茄完成" : "☕ 休息结束";
-              try {
-                if (mode === "work") {
-                  const session_id =
-                    "group_" +
-                    Date.now() +
-                    "_" +
-                    Math.random().toString(36).substring(2);
-                  await addSession("work", autoNote, session_id);
-                  await createGroup(
-                    session_id,
-                    "番茄会话 " +
-                      new Date().toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }),
-                  );
-                  pendingSessionId = session_id;
+          if (timeLeft === 0) {
+            playBeep();
+            const mode = currentMode;
+            let autoNote = mode === "work" ? "✅ 番茄完成" : "☕ 休息结束";
+            try {
+              if (mode === "work") {
+                const session_id = "group_" + Date.now() + "_" + Math.random().toString(36).substring(2);
+                await addSession("work", autoNote, session_id);
+                await createGroup(session_id, "番茄会话 " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+                pendingSessionId = session_id;
+              } else {
+                if (pendingSessionId) {
+                  await addSession("break", autoNote, pendingSessionId);
+                  pendingSessionId = null;
                 } else {
-                  if (pendingSessionId) {
-                    await addSession("break", autoNote, pendingSessionId);
-                    pendingSessionId = null;
-                  } else {
-                    await addSession("break", autoNote);
-                  }
+                  await addSession("break", autoNote);
                 }
-                renderAllHistory();
-              } catch (e) {
-                console.error("记录失败", e);
               }
-              switchMode();
-              updateUI();
+              renderAllHistory();
+            } catch (e) {
+              console.error("记录失败", e);
             }
-          }, 1000);
-        }
-        function toggleTimer() {
-          isRunning ? stopTimer() : startTimer();
-        }
-        function resetTimer() {
-          stopTimer();
-          timeLeft = currentMode === "work" ? WORK_TIME : BREAK_TIME;
+            switchMode();
+            updateUI();
+          }
+        }, 1000);
+      }
+      function toggleTimer() {
+        isRunning ? stopTimer() : startTimer();
+      }
+      function resetTimer() {
+        stopTimer();
+        timeLeft = currentMode === "work" ? WORK_TIME : BREAK_TIME;
+        updateUI();
+      }
+
+      function updateWorkTimeFromInput() {
+        let v = parseInt($workMinutesInput.val(), 10) || 25;
+        $workMinutesInput.val(v);
+        WORK_TIME = v * 60;
+      }
+      function updateBreakTimeFromInput() {
+        let v = parseInt($breakMinutesInput.val(), 10) || 5;
+        $breakMinutesInput.val(v);
+        BREAK_TIME = v * 60;
+      }
+      function onWorkChange() {
+        updateWorkTimeFromInput();
+        if (!isRunning && currentMode === "work") {
+          timeLeft = WORK_TIME;
           updateUI();
         }
+      }
+      function onBreakChange() {
+        updateBreakTimeFromInput();
+        if (!isRunning && currentMode === "break") {
+          timeLeft = BREAK_TIME;
+          updateUI();
+        }
+      }
 
-        // 自定义时间
-        function updateWorkTimeFromInput() {
-          let v = parseInt($workMinutesInput.val(), 10) || 25;
-          $workMinutesInput.val(v);
-          WORK_TIME = v * 60;
-        }
-        function updateBreakTimeFromInput() {
-          let v = parseInt($breakMinutesInput.val(), 10) || 5;
-          $breakMinutesInput.val(v);
-          BREAK_TIME = v * 60;
-        }
-        function onWorkChange() {
-          updateWorkTimeFromInput();
-          if (!isRunning && currentMode === "work") {
-            timeLeft = WORK_TIME;
-            updateUI();
-          }
-        }
-        function onBreakChange() {
-          updateBreakTimeFromInput();
-          if (!isRunning && currentMode === "break") {
-            timeLeft = BREAK_TIME;
-            updateUI();
-          }
-        }
+      // ======================= 渲染组 + 单条记录 =======================
+      async function renderAllHistory() {
+        const groups = await getAllGroupsWithSessions();
+        let groupHtml = "";
+        if (groups.length === 0) {
+          groupHtml = '<div class="empty-history"><i class="fas fa-tomato" style="font-size:2rem; opacity:0.4;"></i><br>暂无番茄会话组</div>';
+        } else {
+          groups.forEach((group) => {
+            const workSession = group.sessions.find((s) => s.type === "work");
+            const breakSession = group.sessions.find((s) => s.type === "break");
+            const workNote = workSession ? workSession.note : "";
+            const breakNote = breakSession ? breakSession.note : "";
+            const workTime = workSession ? new Date(workSession.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+            const breakTime = breakSession ? new Date(breakSession.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
 
-        // =======================  渲染组 + 单条记录 =======================
-        async function renderAllHistory() {
-          // 1. 渲染组
-          const groups = await getAllGroupsWithSessions();
-          let groupHtml = "";
-          if (groups.length === 0) {
-            groupHtml =
-              '<div class="empty-history"><i class="fas fa-tomato" style="font-size:2rem; opacity:0.4;"></i><br>暂无番茄会话组</div>';
-          } else {
-            groups.forEach((group) => {
-              const workSession = group.sessions.find((s) => s.type === "work");
-              const breakSession = group.sessions.find(
-                (s) => s.type === "break",
-              );
-              const workNote = workSession ? workSession.note : "";
-              const breakNote = breakSession ? breakSession.note : "";
-              const workTime = workSession
-                ? new Date(workSession.timestamp).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })
-                : "";
-              const breakTime = breakSession
-                ? new Date(breakSession.timestamp).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })
-                : "";
-
-              groupHtml += `<div class="group-item" data-session-id="${group.session_id}">
+            groupHtml += `<div class="group-item" data-session-id="${group.session_id}">
               <div class="group-header">
                 <div class="group-title">
                   <span class="group-name">${group.name || "番茄会话"}</span>
@@ -1123,168 +1001,139 @@
                 </div>
               </div>
             </div>`;
-            });
+          });
+        }
+        $("#groupListContainer").html(groupHtml);
+
+        $(".edit-name-btn").on("click", async function () {
+          const session_id = $(this).data("id");
+          const newName = prompt("请输入新的组名称", "");
+          if (newName !== null) {
+            await updateGroup(session_id, { name: newName.trim() || "未命名" });
+            renderAllHistory();
           }
-          $("#groupListContainer").html(groupHtml);
+        });
+        $(".edit-remark-btn").on("click", async function () {
+          const session_id = $(this).data("id");
+          const newRemark = prompt("编辑组备注", "");
+          if (newRemark !== null) {
+            await updateGroup(session_id, { remark: newRemark.trim() });
+            renderAllHistory();
+          }
+        });
+        $(".delete-group-btn").on("click", async function () {
+          const session_id = $(this).data("id");
+          if (confirm("确定删除该组及其所有记录吗？")) {
+            await deleteGroupAndSessions(session_id);
+            renderAllHistory();
+          }
+        });
 
-          // 绑定组内按钮事件
-          $(".edit-name-btn").on("click", async function () {
-            const session_id = $(this).data("id");
-            const newName = prompt("请输入新的组名称", "");
-            if (newName !== null) {
-              await updateGroup(session_id, {
-                name: newName.trim() || "未命名",
-              });
-              renderAllHistory();
-            }
-          });
-          $(".edit-remark-btn").on("click", async function () {
-            const session_id = $(this).data("id");
-            const newRemark = prompt("编辑组备注", "");
-            if (newRemark !== null) {
-              await updateGroup(session_id, { remark: newRemark.trim() });
-              renderAllHistory();
-            }
-          });
-          $(".delete-group-btn").on("click", async function () {
-            const session_id = $(this).data("id");
-            if (confirm("确定删除该组及其所有记录吗？")) {
-              await deleteGroupAndSessions(session_id);
-              renderAllHistory();
-            }
-          });
-
-          // 2. 渲染未分组记录
-          const singles = await getUnlinkedSessions();
-          let singleHtml = "";
-          if (singles.length === 0) {
-            singleHtml =
-              '<div class="empty-history" style="padding:15px;">暂无手动记录</div>';
-          } else {
-            singles.forEach((rec) => {
-              const date = new Date(rec.timestamp);
-              const dateStr = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
-              const typeLabel = rec.type === "work" ? "🍅 工作" : "🧘 休息";
-              singleHtml += `<div class="single-record-item" data-id="${rec.id}">
+        const singles = await getUnlinkedSessions();
+        let singleHtml = "";
+        if (singles.length === 0) {
+          singleHtml = '<div class="empty-history" style="padding:15px;">暂无手动记录</div>';
+        } else {
+          singles.forEach((rec) => {
+            const date = new Date(rec.timestamp);
+            const dateStr = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+            const typeLabel = rec.type === "work" ? "🍅 工作" : "🧘 休息";
+            singleHtml += `<div class="single-record-item" data-id="${rec.id}">
               <div><span class="badge-type" style="background:${rec.type === "work" ? "#fa9e79" : "#91c7a0"};">${typeLabel}</span>
               <span style="margin-left:16px;"><i class="fas fa-quote-right"></i> ${rec.note}</span>
               <span style="margin-left:20px; color:#9e7b62; font-size:0.9rem;"><i class="far fa-calendar-alt"></i> ${dateStr}</span></div>
               <button class="delete-btn" data-id="${rec.id}"><i class="fas fa-trash-alt"></i></button>
             </div>`;
-            });
-          }
-          $("#singleRecordListContainer").html(singleHtml);
-          $(".delete-btn")
-            .off("click")
-            .on("click", async function () {
-              const id = $(this).data("id");
-              if (confirm("删除此条记录？")) {
-                await deleteSessionById(id);
-                renderAllHistory();
-              }
-            });
-        }
-
-        // =======================  手动保存记录（无session_id，不分组） =======================
-        async function handleManualSave() {
-          const type = $recordType.val();
-          const note = $recordNote.val().trim();
-          if (!note) {
-            alert("请输入备注");
-            return;
-          }
-          await addSession(type, note, null);
-          $recordNote.val("");
-          renderAllHistory();
-        }
-
-        // =======================  日期 & 鼓励语 =======================
-        function updateDateInfo() {
-          const now = new Date();
-          const weekdays = [
-            "星期日",
-            "星期一",
-            "星期二",
-            "星期三",
-            "星期四",
-            "星期五",
-            "星期六",
-          ];
-          $("#currentDateDisplay").text(
-            `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${weekdays[now.getDay()]}`,
-          );
-          $("#daysInMonth").text(
-            new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate(),
-          );
-        }
-        const encouragementList = [
-          "🍀 每一分钟都值得认真对待",
-          "⭐ 再坚持一下，快完成了！",
-          "💪 你比想象中更强大",
-          "🌻 专注是最高级的自律",
-          "🎯 今天的番茄格外香甜",
-          "🌸 休息是为了走更远的路",
-          "🔥 你已经很棒了，继续加油",
-          "🌈 完成一个番茄，离目标更近一步",
-          "🍅 今日番茄，明日硕果",
-          "✨ 心无旁骛，万事可破",
-        ];
-        function setRandomEncouragement() {
-          $("#encourageMessage").text(
-            encouragementList[
-              Math.floor(Math.random() * encouragementList.length)
-            ],
-          );
-        }
-
-        // =======================  页面初始化 =======================
-        $(document).ready(async function () {
-          initAudioContext();
-          try {
-            await openDB();
-          } catch (e) {
-            alert("IndexedDB初始化失败");
-          }
-
-          // 初始化自定义时间
-          updateWorkTimeFromInput();
-          updateBreakTimeFromInput();
-          timeLeft = WORK_TIME;
-          updateUI();
-          updateDateInfo();
-          setRandomEncouragement();
-          await renderAllHistory();
-
-          // 事件绑定（使用已经在开头定义的变量）
-          $workMinutesInput.on("change", onWorkChange);
-          $breakMinutesInput.on("change", onBreakChange);
-          $startPauseBtn.on("click", toggleTimer);
-          $resetBtn.on("click", resetTimer);
-          $testSoundBtn.on("click", playBeep); // 声音测试
-          $saveRecordBtn.on("click", handleManualSave);
-          $recordNote.on("keypress", function (e) {
-            if (e.which === 13) {
-              e.preventDefault();
-              handleManualSave();
-            }
           });
-          $refreshEncourageBtn.on("click", setRandomEncouragement);
-
-          // 一键删除所有
-          $clearAllBtn.on("click", async function () {
-            if (confirm("⚠️ 确定删除所有番茄会话组和记录？此操作不可恢复！")) {
-              await deleteAllData();
-              pendingSessionId = null;
-              renderAllHistory();
-            }
-          });
-
-          $(window).on("beforeunload", function () {
-            if (timerInterval) clearInterval(timerInterval);
-            beepTimeouts.forEach(clearTimeout);
-          });
+        }
+        $("#singleRecordListContainer").html(singleHtml);
+        $(".delete-btn").off("click").on("click", async function () {
+          const id = $(this).data("id");
+          if (confirm("删除此条记录？")) {
+            await deleteSessionById(id);
+            renderAllHistory();
+          }
         });
-      })();
-    </script>
-  </body>
+      }
+
+      async function handleManualSave() {
+        const type = $recordType.val();
+        const note = $recordNote.val().trim();
+        if (!note) {
+          alert("请输入备注");
+          return;
+        }
+        await addSession(type, note, null);
+        $recordNote.val("");
+        renderAllHistory();
+      }
+
+      // ======================= 日期 & 鼓励语 =======================
+      function updateDateInfo() {
+        const now = new Date();
+        const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+        $("#currentDateDisplay").text(`${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${weekdays[now.getDay()]}`);
+        $("#daysInMonth").text(new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate());
+      }
+      const encouragementList = [
+        "💪 你比想象中更强大，再添一个番茄吧",
+        "🌻 专注是最高级的自律，今天也在发光呢",
+        "🎯 今天的番茄格外香甜，效率满满",
+        "🌸 休息是为了走更远的路，放松一下",
+        "🔥 你已经很棒了，继续加油，番茄会记得",
+        "🌈 完成一个番茄，离目标更近一步",
+        "🍅 今日番茄，明日硕果，点滴积累",
+        "✨ 心无旁骛，万事可破，专注当下"
+      ];
+      function setRandomEncouragement() {
+        $("#encourageMessage").text(encouragementList[Math.floor(Math.random() * encouragementList.length)]);
+      }
+
+      // ======================= 页面初始化 =======================
+      $(document).ready(async function () {
+        initAudioContext();
+        try {
+          await openDB();
+        } catch (e) {
+          alert("IndexedDB初始化失败");
+        }
+
+        updateWorkTimeFromInput();
+        updateBreakTimeFromInput();
+        timeLeft = WORK_TIME;
+        updateUI();
+        updateDateInfo();
+        setRandomEncouragement();
+        await renderAllHistory();
+
+        $workMinutesInput.on("change", onWorkChange);
+        $breakMinutesInput.on("change", onBreakChange);
+        $startPauseBtn.on("click", toggleTimer);
+        $resetBtn.on("click", resetTimer);
+        $testSoundBtn.on("click", playBeep);
+        $saveRecordBtn.on("click", handleManualSave);
+        $recordNote.on("keypress", function (e) {
+          if (e.which === 13) {
+            e.preventDefault();
+            handleManualSave();
+          }
+        });
+        $refreshEncourageBtn.on("click", setRandomEncouragement);
+
+        $clearAllBtn.on("click", async function () {
+          if (confirm("⚠️ 确定删除所有番茄会话组和记录？此操作不可恢复！")) {
+            await deleteAllData();
+            pendingSessionId = null;
+            renderAllHistory();
+          }
+        });
+
+        $(window).on("beforeunload", function () {
+          if (timerInterval) clearInterval(timerInterval);
+          beepTimeouts.forEach(clearTimeout);
+        });
+      });
+    })();
+  </script>
+</body>
 </html>
